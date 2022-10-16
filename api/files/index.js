@@ -136,11 +136,11 @@ Params    none
 Access    Public
 Method    GET  
 */
-Router.get("/get-recent-user-docs/:_id/", async (req, res) => {
+Router.get("/get-recent-user-docs/:_id", async (req, res) => {
   try {
     const q = `SELECT * FROM customer_documents Where customer_id = (?)`;
-    db.query(q, [0],(err, data) => {
-      if (err) return res.status(00500).json(err.message);
+    db.query(q, [0], (err, data) => {
+      if (err) return res.status(500).json(err.message);
       return res.status(200).json({ data });
     });
   } catch (error) {}
