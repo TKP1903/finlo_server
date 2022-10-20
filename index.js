@@ -11,7 +11,8 @@ const googleAuthConfig = require('./config/google.config');
 const routeConfig = require('./config/route.config');
 
 //microservice routes 
-const Auth = require('./api/Auth');
+const Auth = require("./api/Auth/index");
+const Folders = require("./api/folders/index");
 const Docs = require("./api/files/index");
 
 const Finlo = express();
@@ -39,6 +40,7 @@ routeConfig(passport);
 
 //Application routes
 Finlo.use("/auth", Auth);
+Finlo.use("/folder", Folders);
 Finlo.use("/file", Docs);
 
 Finlo.get('/', (req, res) => res.json("Welcome to Finlo"))

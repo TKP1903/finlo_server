@@ -16,9 +16,9 @@ Method    POST
 Router.post("/register", (req, res) => {
   console.log(req.body);
 
-  const q = "SELECT * FROM users WHERE email = ? OR username = ?";
+  const q = "SELECT * FROM users WHERE email = ?";
 
-  db.query(q, [req.body.email, req.body.username], (err, data) => {
+  db.query(q, [req.body.email], (err, data) => {
     if (err) return res.status(500).json(err.message);
     if (data.length) return res.status(409).json("User already exists!");
 
@@ -26,8 +26,8 @@ Router.post("/register", (req, res) => {
     const salt = bcrypt.genSaltSync(10);
     const hash = bcrypt.hashSync(req.body.password, salt);
 
-    const q = "INSERT INTO users(`username`,`email`,`password`) VALUES (?)";
-    const values = [req.body.username, req.body.email, hash];
+    const q = "INSERT INTO users(`email`,`password`, `user_role`) VALUES (?)";
+    const values = [req.body.email, hash, req.body.user_role];
 
     db.query(q, [values], (err, data) => {
       if (err) return res.status(500).json(err);
@@ -48,8 +48,9 @@ Router.post("/login", (req, res) => {
   const q = "SELECT * FROM users WHERE email = ?";
 
   db.query(q, [req.body.email], (err, data) => {
+    console.log(data);
     if (err) return res.status(500).json(err);
-    if (data.length === 0) return res.status(404).json("User not found!");
+    if (data.length === 0) return res.status(404).json("User not found!!");
 
     //Check password
     const isPasswordCorrect = bcrypt.compareSync(
@@ -102,7 +103,7 @@ Router.get(
   (req, res) => {
     // return res.json({token: req.session.passport.user.token})
     return res.redirect(
-      `http://localhost:3000/google/${req.session.passport.user.token}`
+      `http://52.53.219.188/google/${req.session.passport.user.token}`
     );
   }
 );
@@ -123,4 +124,36 @@ Router.post("/logout", (req, res) => {
     .status(200)
     .json("User has been logged out.");
 });
-  module.exports= Router;
+module.exports = Router;
+  
+
+
+// INSERT INTO `finlotax`.`customer`
+// (`email`,
+// `password`,
+// `customer_profile_id`,
+// `customer_documents_id`,
+// `user_role_id`,
+// `phone`,
+// `city`,
+// `state`,
+// `pincode`,
+// `country`,
+// `profile_url`,
+// `created_date_time`,
+// `updated_date_time`)
+// VALUES
+// (
+// "client@finlo.com",
+// "1234",
+// "profile_id",
+// "documents_id",
+// "user_role_id",
+// 7896,
+// "HYD",
+// "AP",
+// 89569,
+// "INDIA",
+// "profile_id",
+// "2003-12-31 12:00:00",
+// "2003-12-31 12:00:00");

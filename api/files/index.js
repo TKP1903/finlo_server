@@ -12,6 +12,49 @@ const Router = express.Router();
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
+let now = new Date();
+let date = now.toLocaleDateString();
+let time = now.toLocaleTimeString();
+const date_time = now;
+
+/*
+Route     /get-user-docs/:_id/:folderName
+Des       
+Params    none
+Access    Public
+Method    GET  
+*/
+Router.get("/get-user-docs/:_id/:folderName", async (req, res) => {
+  try {
+    const folder_name = req.params.folderName;
+    const user_id = req.params._id;
+    console.log({ folder_name, user_id });
+    console.log(folder_name);
+    const q = `SELECT * FROM client_documents Where folder_name = ? AND user_id = ?`;
+    db.query(q, [folder_name, user_id], (err, data) => {
+      if (err) return res.status(00500).json(err.message);
+      return res.status(200).json({ data });
+    });
+  } catch (error) {}
+});
+
+/*
+Route     /get-recent-user-docs
+Des       
+Params    none
+Access    Public
+Method    GET  
+*/
+Router.get("/get-recent-user-docs/:_id", async (req, res) => {
+  try {
+    const q = `SELECT * FROM client_documents Where user_id = (?)`;
+    db.query(q, req.params._id, (err, data) => {
+      if (err) return res.status(500).json(err.message);
+      return res.status(200).json({ data });
+    });
+  } catch (error) {}
+});
+
 /*
 Route     /uploadfile/:_id/:folderName
 Des       
@@ -19,84 +62,42 @@ Params    none
 Access    Public
 Method    POST  
 */
-Router.post("/uploadfile/:_id/:folderName", upload.single("file"), async (req, res) => {
-  try {
-    const file = req.file;
-    const user_id = req.params._id;
-    const folderName = req.params.folderName;
-
-    // s3 bucket options
-    const bucketOptions = {
-      Bucket: "finlo",
-      Key: `${folderName}/${file.originalname}`,
-      Body: file.buffer,
-      ContentType: file.mimetype,
-      //   ACL: "public-read", // Access Control List
-    };
-
-    const uploadImage = await s3Upload(bucketOptions);
-    // console.log(uploadImage.Location, file.originalname, file.mimetype);
-    // console.log(
-    //   user_id,
-    //   file.originalname,
-    //   uploadImage.Location,
-    //   file.mimetype,
-    //   file.size
-    // );
-    const id = 0;
-    const q =
-      "INSERT INTO customer_documents (`customer_documents_id`, `customer_id`, `document_name`, `document_link`, `document_type`, `document_Size`, `folder_name`) VALUES (?)";
-    const values = [
-      id,
-      user_id,
-      file.originalname,
-      uploadImage.Location,
-      file.mimetype,
-      file.size,
-      folderName
-    ];
-    db.query(q, [values], (err, data) => {
-      if (err) return res.status(500).json(err.message);
-      // else console.log(data);
-      return res
-        .status(200)
-        .json({ message: "File uploaded successfully", data });
-    });
-    // return res.status(200).json({ uploadImage });
-  } catch (error) {
-    return res.status(500).json({ error: error.message });
-  }
-});
-
-/*
-Route     /uploadfolder/:_id/:folderName
-Des       
-Params    none
-Access    Public
-Method    POST  
-*/
 Router.post(
-  "/uploadfolder/:_id/:folderName",
+  "/uploadfile/:_id/:folderName",
   upload.single("file"),
   async (req, res) => {
     try {
+      const file = req.file;
       const user_id = req.params._id;
       const folderName = req.params.folderName;
-      console.log(req.params);
+
       // s3 bucket options
       const bucketOptions = {
         Bucket: "finlo",
-        Key: `${folderName}/`,
-        Body: `${folderName}`,
-        // ContentType: file.mimetype,
+        Key: `${folderName}/${file.originalname}`,
+        Body: file.buffer,
+        ContentType: file.mimetype,
         //   ACL: "public-read", // Access Control List
       };
+
       const uploadImage = await s3Upload(bucketOptions);
-      const values = [user_id, folderName];
+
       const q =
-        "INSERT INTO user_folders (`user_id`, `folder_name`) VALUES (?)";
+        "INSERT INTO client_documents (`user_id`, `document_name`, `document_link`, `document_Size`,`document_type`, `folder_name`, `created_date_time`,`updated_date_time`) VALUES (?)";
+      const values = [
+        user_id,
+        file.originalname,
+        uploadImage.Location,
+        file.size,
+        file.mimetype,
+        folderName,
+        date_time,
+        date_time,
+      ];
+
       db.query(q, [values], (err, data) => {
         if (err) return res.status(500).json(err.message);
+        // else console.log(data);
         return res
           .status(200)
           .json({ message: "File uploaded successfully", data });
@@ -109,82 +110,6 @@ Router.post(
 );
 
 /*
-Route     /get-user-folders/:_id
-Des       
-Params    none
-Access    Public
-Method    GET  
-*/
-Router.get(
-  "/get-user-folders/:_id",
-  async (req, res) => {
-    try {
-      console.log(req.params._id);
-      const q = "SELECT * FROM user_folders Where user_id = (?)";
-      db.query(q, [req.params._id],(err, data) => {
-        if (err) return res.status(500).json(err.message);
-        // else console.log(data);
-        return res.status(200).json({ data });
-      });
-    } catch (error) {}
-  }
-);
-/*
-Route     /get-recent-user-docs
-Des       
-Params    none
-Access    Public
-Method    GET  
-*/
-Router.get("/get-recent-user-docs/:_id", async (req, res) => {
-  try {
-    const q = `SELECT * FROM customer_documents Where customer_id = (?)`;
-    db.query(q, [0], (err, data) => {
-      if (err) return res.status(500).json(err.message);
-      return res.status(200).json({ data });
-    });
-  } catch (error) {}
-});
-
-/*
-Route     /get-user-docs/:_id/:folderName
-Des       
-Params    none
-Access    Public
-Method    GET  
-*/
-Router.get("/get-user-docs/:_id/:folderName", async (req, res) => {
-  try {
-    const folder_name = req.params.folderName
-    const customer_id = req.params._id
-    console.log(folder_name);
-    const q = `SELECT * FROM customer_documents Where folder_name = ? AND customer_id = ?`;
-    db.query(q, [folder_name, 0],(err, data) => {
-      if (err) return res.status(00500).json(err.message);
-      return res.status(200).json({ data });
-    });
-  } catch (error) {}
-});
-
-
-
-/*
-Route     /delete-folder
-Des       
-Params    none
-Access    Public
-Method    DELETE
-*/
-Router.delete("/delete-folder/:folderName", (req, res) => {
-  const folderName = req.params.folderName;
-  const q = `DELETE FROM user_folders WHERE folder_name = (?)`;
-  db.query(q, [folderName], (err, data) => {
-    if (err) return res.status(00500).json(err.message);
-    return res.status(200).json({ data });
-  });
-});
-
-/*
 Route     /delete-file
 Des       
 Params    none
@@ -194,34 +119,35 @@ Method    DELETE
 Router.delete("/delete-file", (req, res) => {
   const fileName = req.body.fileName;
   const user_id = req.body.user_id;
-  console.log({fileName, user_id});
-  const q = `DELETE FROM customer_documents WHERE document_name = ? AND customer_id = ?`;
+  console.log({ fileName, user_id });
+  const q = `DELETE FROM client_documents WHERE document_name = ? AND user_id = ?`;
   db.query(q, [fileName, user_id], (err, data) => {
-    if (err) return res.status(00500).json(err.message);
+    if (err) return res.status(500).json(err.message);
     return res.status(200).json({ data });
   });
 });
 
 /*
-Route     /update-folder
+Route     /update-file-name
 Des       
 Params    none
 Access    Public
 Method    DELETE
 */
-Router.put("/update-folder", (req, res) => {
-  const folderName = req.body.fileName;
-  const user_id = req.body.user_id;
-  const q =
-  `UPDATE user_folders
+Router.put("/update-file-name", (req, res) => {
+  const { client_documents_id, user_id, updatedFileName } = req.body;
+  const userID = parseInt(user_id);
+  const q = `UPDATE client_documents
   SET
-  folder_name = ?,
-  WHERE user_id = ?
-  `
-  db.query(q, [folderName, user_id], (err, data) => {
-    if (err) return res.status(00500).json(err.message);
+  folder_name = ${updatedFileName},
+  WHERE (client_documents_id = ${client_documents_id}) and (user_id = ${userID})
+  `;
+  db.query(q, [updatedFileName, client_documents_id, userID], (err, data) => {
+    if (err) return res.status(500).json(err.message);
     return res.status(200).json({ data });
   });
 });
+
+// UPDATE `finlotax`.`client_documents` SET `document_name` = '6_Pista.jpg' WHERE (`client_documents_id` = '8') and (`user_id` = '2');
 
 module.exports = Router;
