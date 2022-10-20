@@ -7,16 +7,14 @@ const mysql = require("mysql");
 //   database: "finlotax",
 // });
 
-
 db = mysql.createConnection({
-  port: "3306",
-  host: "localhost",
-  user: "root", 
-  database: "finlo",
-  password: "9344120434Ab@",
+  port: process.env.DB_PORT,
+  host: process.env.HOST,
+  user: process.env.USER,
+  database: process.env.user,
+  password: process.env.DB_KEY,
   multipleStatements: true,
-  dateStrings: "Date"
-  
+  dateStrings: "Date",
 });
 
 // db.connect(function (err) {

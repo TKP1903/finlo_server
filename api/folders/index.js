@@ -41,13 +41,14 @@ Router.post("/create-folder", async (req, res) => {
   try {
     const user_id = req.body.user_id;
     const folderName = req.body.folderName;
+    const userName = req.body.userName;
     const parentFolderName = req.body?.parentFolderName
       ? req.body?.parentFolderName
       : "/";
     // s3 bucket options
     const bucketOptions = {
       Bucket: "finlo",
-      Key: `${folderName}/`,
+      Key: `${userName}/${folderName}/`,
       Body: `${folderName}`,
       // ContentType: file.mimetype,
       //   ACL: "public-read", // Access Control List
