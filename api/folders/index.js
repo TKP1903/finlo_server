@@ -107,28 +107,28 @@ Access    Public
 Method    DELETE
 */
 Router.put("/update-folder-name", (req, res) => {
-  const { folderNewName, folderName, user_id } = req.body;
-  let client_folder_id;
-  db.query(
-    "SELECT * FROM client_folders where folder_name = ? and user_id = ?",
-    [folderName, user_id],
-    (err, data) => {
-      if (err) return res.status(500).json(err.message);
-      client_folder_id = data[0].client_folders_id;
-    }
-  );
-  console.log(client_folder_id);
-  //   const q = `UPDATE client_folders
-  //   SET
-  //   folder_name = ${folderNewName},
-  //   WHERE folder_name = ? and user_id = ?
-  //   `;
-  //   //   UPDATE `finlotax`.`client_folders` SET `folder_name` = 'demo/d' WHERE (`client_folders_id` = '3') and (`user_id` = '1');
+  const { folderNewName, client_folders_id, user_id } = req.body;
+  const q = `UPDATE client_folders
+    SET
+    folder_name = (?),
+    WHERE client_folders_id = ? and user_id = ?
+    `;
+  //   UPDATE `finlotax`.`client_folders` SET `folder_name` = 'demo/d' WHERE (`client_folders_id` = '3') and (`user_id` = '1');
 
-  //   db.query(q, [folderName, user_id], (err, data) => {
-  //     if (err) return res.status(00500).json(err.message);
-  //     return res.status(200).json({ data });
-  //   });
+  db.query(q, [folderNewName,client_folders_id, user_id], (err, data) => {
+    if (err) return res.status(500).json(err.message);
+    return res.status(200).json({ data });
+  });
 });
 
 module.exports = Router;
+// UPDATE `finlotax`.`client_folders`
+// SET
+// `client_folders_id` = <{client_folders_id: }>,
+// `user_id` = <{user_id: }>,
+// `folder_name` = <{folder_name: }>,
+// `s3_folder_location` = <{s3_folder_location: }>,
+// `parent_folder_name` = <{parent_folder_name: }>,
+// `created_date_time` = <{created_date_time: }>,
+// `updated_date_time` = <{updated_date_time: }>
+// WHERE `client_folders_id` = <{expr}> AND `user_id` = <{expr}>;
