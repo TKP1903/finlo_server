@@ -8,11 +8,11 @@ const mysql = require("mysql");
 // });
 
 db = mysql.createConnection({
-  port: process.env.DB_PORT,
-  host: process.env.HOST,
-  user: process.env.USER,
-  database: process.env.user,
-  password: process.env.DB_KEY,
+  port: "3306",
+  host: "localhost",
+  user: "root",
+  database: "finlo",
+  password: "9344120434Ab@",
   multipleStatements: true,
   dateStrings: "Date",
 });
