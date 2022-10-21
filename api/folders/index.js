@@ -18,15 +18,22 @@ Params    none
 Access    Public
 Method    GET  
 */
-Router.get("/get-user-folders/:_id", async (req, res) => {
+Router.get("/get-user-folders/:_id/:folder_name", async (req, res) => {
   try {
-    console.log(req.params._id);
-    const q = "SELECT * FROM client_folders Where user_id = (?)";
-    db.query(q, [req.params._id], (err, data) => {
-      if (err) return res.status(500).json(err.message);
-      // else console.log(data);
-      return res.status(200).json({ data });
-    });
+    const parent_folder_name = req.params.folder_name;
+    console.log(req.params._id, "parent_folder_name", parent_folder_name);
+    const q =
+      "SELECT * FROM client_folders Where user_id = (?) and parent_folder_name = (?)";
+    db.query(
+      q,
+      [req.params._id, parent_folder_name === "root" ? "" : parent_folder_name],
+      (err, data) => {
+        if (err) return res.status(500).json(err.message);
+        // else console.log(data);
+        console.log({ data });
+        return res.status(200).json({ data });
+      }
+    );
   } catch (error) {}
 });
 
