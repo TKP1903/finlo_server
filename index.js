@@ -14,6 +14,7 @@ const routeConfig = require('./config/route.config');
 const Auth = require("./api/Auth/index");
 const Folders = require("./api/folders/index");
 const Docs = require("./api/files/index");
+const Admin = require("./admin/api/client_api");
 
 const Finlo = express();
 
@@ -42,6 +43,7 @@ routeConfig(passport);
 Finlo.use("/auth", Auth);
 Finlo.use("/folder", Folders);
 Finlo.use("/file", Docs);
+Finlo.use("/admin", Admin);
 
 Finlo.get('/', (req, res) => res.json("Welcome to Finlo"))
 
