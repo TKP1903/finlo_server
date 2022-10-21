@@ -47,7 +47,7 @@ Router.post("/create-folder", async (req, res) => {
     const userName = req.body.userName;
     const parentFolderName = req.body?.parentFolderName
       ? req.body?.parentFolderName
-      : "/";
+      : "root";
     // s3 bucket options
     const bucketOptions = {
       Bucket: "finlo",
