@@ -24,16 +24,12 @@ Router.get("/get-user-folders/:_id/:folder_name", async (req, res) => {
     console.log(req.params._id, "parent_folder_name", parent_folder_name);
     const q =
       "SELECT * FROM client_folders Where user_id = (?) and parent_folder_name = (?)";
-    db.query(
-      q,
-      [req.params._id, parent_folder_name === "root" ? "" : parent_folder_name],
-      (err, data) => {
-        if (err) return res.status(500).json(err.message);
-        // else console.log(data);
-        console.log({ data });
-        return res.status(200).json({ data });
-      }
-    );
+    db.query(q, [req.params._id, parent_folder_name], (err, data) => {
+      if (err) return res.status(500).json(err.message);
+      // else console.log(data);
+      console.log({ data });
+      return res.status(200).json({ data });
+    });
   } catch (error) {}
 });
 
@@ -110,25 +106,14 @@ Router.put("/update-folder-name", (req, res) => {
   const { folderNewName, client_folders_id, user_id } = req.body;
   const q = `UPDATE client_folders
     SET
-    folder_name = (?),
-    WHERE client_folders_id = ? and user_id = ?
-    `;
-  //   UPDATE `finlotax`.`client_folders` SET `folder_name` = 'demo/d' WHERE (`client_folders_id` = '3') and (`user_id` = '1');
+    folder_name = ${folderNewName},
+    updated_date_time = ${date_time},
+    WHERE client_folders_id = ${client_folders_id} AND user_id = ${user_id}`;
 
-  db.query(q, [folderNewName,client_folders_id, user_id], (err, data) => {
+  db.query(q, (err, data) => {
     if (err) return res.status(500).json(err.message);
     return res.status(200).json({ data });
   });
 });
 
 module.exports = Router;
-// UPDATE `finlotax`.`client_folders`
-// SET
-// `client_folders_id` = <{client_folders_id: }>,
-// `user_id` = <{user_id: }>,
-// `folder_name` = <{folder_name: }>,
-// `s3_folder_location` = <{s3_folder_location: }>,
-// `parent_folder_name` = <{parent_folder_name: }>,
-// `created_date_time` = <{created_date_time: }>,
-// `updated_date_time` = <{updated_date_time: }>
-// WHERE `client_folders_id` = <{expr}> AND `user_id` = <{expr}>;

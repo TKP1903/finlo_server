@@ -28,6 +28,7 @@ Router.get("/get-user-docs/:_id/:folderName", async (req, res) => {
   try {
     const folder_name = req.params.folderName;
     const user_id = req.params._id;
+    console.log({ folder_name });
     const q = `SELECT * FROM client_documents Where folder_name = ? AND user_id = ?`;
     db.query(q, [folder_name, user_id], (err, files) => {
       if (err) return res.status(500).json(err.message);
