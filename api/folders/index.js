@@ -106,10 +106,10 @@ Router.put("/update-folder-name", (req, res) => {
   const { folderNewName, client_folders_id, user_id } = req.body;
   const q = `UPDATE client_folders
     SET
-    folder_name = ${folderNewName},
-    updated_date_time = ${date_time},
+    folder_name = ${folderNewName}
+    updated_date_time = ${date_time}
     WHERE client_folders_id = ${client_folders_id} AND user_id = ${user_id}`;
-
+  console.log(q);
   db.query(q, (err, data) => {
     if (err) return res.status(500).json(err.message);
     return res.status(200).json({ data });
