@@ -145,17 +145,22 @@ Access    Public
 Method    DELETE
 */
 Router.put("/update-file-name", (req, res) => {
-  const { client_documents_id, user_id, updatedFileName } = req.body;
-  const userID = parseInt(user_id);
-  const q = `UPDATE client_documents
-  SET
-  folder_name = ${updatedFileName},
-  WHERE (client_documents_id = ${client_documents_id}) and (user_id = ${userID})
-  `;
-  db.query(q, [updatedFileName, client_documents_id, userID], (err, data) => {
-    if (err) return res.status(500).json(err.message);
-    return res.status(200).json({ data });
-  });
+  try {
+    const { client_documents_id, user_id, updatedFileName } = req.body;
+    const userID = parseInt(user_id);
+    const q = `UPDATE client_documents
+    SET
+    folder_name = ${updatedFileName},
+    WHERE (client_documents_id = ${client_documents_id}) and (user_id = ${userID})
+    `;
+    db.query(q, [updatedFileName, client_documents_id, userID], (err, data) => {
+      if (err) return res.status(500).json(err.message);
+      return res.status(200).json({ data });
+    });  
+  } catch (error) {
+    return res.status()
+  }
+  
 });
 
 // UPDATE `finlotax`.`client_documents` SET `document_name` = '6_Pista.jpg' WHERE (`client_documents_id` = '8') and (`user_id` = '2');

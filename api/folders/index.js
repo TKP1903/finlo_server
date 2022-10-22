@@ -9,7 +9,7 @@ const Router = express.Router();
 let now = new Date();
 let date = now.toLocaleDateString();
 let time = now.toLocaleTimeString();
-const date_time = now;
+const date_time = new Date();
 
 /*
 Route     /get-user-folders/:_id
@@ -103,17 +103,40 @@ Access    Public
 Method    DELETE
 */
 Router.put("/update-folder-name", (req, res) => {
-  const { folderNewName, client_folders_id, user_id } = req.body;
-  const q = `UPDATE client_folders
-    SET
-    folder_name = ${folderNewName}
-    updated_date_time = ${date_time}
-    WHERE client_folders_id = ${client_folders_id} AND user_id = ${user_id}`;
-  console.log(q);
-  db.query(q, (err, data) => {
-    if (err) return res.status(500).json(err.message);
-    return res.status(200).json({ data });
-  });
+  const { folderNewName, client_folders_id, folderName, user_id } = req.body;
+  let q =
+    "UPDATE client_folders SET folder_name =?, updated_date_time = ? where `client_folders_id` =? AND `user_id` = ?";
+  let q1 =
+    "UPDATE client_folders SET parent_folder_name = ? WHERE `client_folders_id` =? AND `user_id` = ? AND `parent_folder_name` = ?";
+  db.query(
+    q,
+    [
+      folderNewName,
+      date_time,
+      client_folders_id,
+      user_id,
+      folderNewName,
+      client_folders_id,
+      user_id,
+      folderName,
+    ],
+    (err, data) => {
+      if (err) return res.status(500).json(err.message);
+      else {
+        let q1 =
+          "UPDATE client_folders SET parent_folder_name = ? WHERE `client_folders_id` =? AND `parent_folder_name` = ?";
+        db.query(
+          q,
+          [folderNewName, client_folders_id, folderName],
+          (err, data) => {
+            if (err) return res.status(500).json({ error: err.message });
+            return res.status(200).json({ data });
+          }
+        );
+      }
+    }
+  );
 });
 
 module.exports = Router;
+
