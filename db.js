@@ -1,21 +1,21 @@
 const mysql = require("mysql");
 
-const db = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "rootuser@123",
-  database: "finlotax",
-});
-
-// db = mysql.createConnection({
-//   port: "3306",
+// const db = mysql.createConnection({
 //   host: "localhost",
 //   user: "root",
-//   database: "finlo",
-//   password: "9344120434Ab@",
-//   multipleStatements: true,
-//   dateStrings: "Date",
+//   password: "rootuser@123",
+//   database: "finlotax",
 // });
+
+db = mysql.createConnection({
+  port: "3306",
+  host: "localhost",
+  user: "root",
+  database: "finlo",
+  password: "9344120434Ab@",
+  multipleStatements: true,
+  dateStrings: "Date",
+});
 
 // db.connect(function (err) {
 // if (!err) {
