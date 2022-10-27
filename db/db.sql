@@ -19,7 +19,6 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- User Folders
-
 CREATE TABLE `client_folders` (
   `client_folders_id` int NOT NULL AUTO_INCREMENT,
   `user_id` int NOT NULL,
@@ -34,7 +33,6 @@ CREATE TABLE `client_folders` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- User Table
-
 CREATE TABLE `users` (
   `id` int NOT NULL DEFAULT '0',
   `username` varchar(255) NOT NULL,
@@ -42,3 +40,46 @@ CREATE TABLE `users` (
   `password` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Employees
+CREATE TABLE `employees` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `phone` varchar(255) NOT NULL,
+  `role` varchar(255) NOT NULL,
+  `address` varchar(255) NOT NULL,
+  `zipcode` varchar(255) NOT NULL,
+  `date_of_joining` date NOT NULL,
+  `designation` varchar(255) NOT NULL,
+  `salary` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Invoices
+CREATE TABLE `invoices` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `invoice_number` varchar(255) NOT NULL,
+  `payment_date` date NOT NULL,
+  `payment_order_id` varchar(255) NOT NULL,
+  `invoice_provider_id` varchar(255) NOT NULL,
+  `invoice_provider_name` varchar(255) NOT NULL,
+  `created_by` varchar(255) NOT NULL,
+  `created_date_time` datetime NOT NULL,
+  `updated_date_time` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Contracts
+CREATE TABLE `contracts` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `amount` varchar(255) NOT NULL,
+  `payment_date` date NOT NULL,
+  `payment_order_id` varchar(255) NOT NULL,
+  `invoice_provider_id` varchar(255) NOT NULL,
+  `invoice_provider_name` varchar(255) NOT NULL,
+  `created_by` varchar(255) NOT NULL,
+  `created_date_time` datetime NOT NULL,
+  `updated_date_time` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
