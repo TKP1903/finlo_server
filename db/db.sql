@@ -44,8 +44,7 @@ CREATE TABLE `users` (
 -- Employees
 CREATE TABLE `employees` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
-  `email` varchar(255) NOT NULL,
+  `user_id` int NOT NULL,
   `phone` varchar(255) NOT NULL,
   `role` varchar(255) NOT NULL,
   `address` varchar(255) NOT NULL,
@@ -53,7 +52,8 @@ CREATE TABLE `employees` (
   `date_of_joining` date NOT NULL,
   `designation` varchar(255) NOT NULL,
   `salary` varchar(255) NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Invoices
@@ -62,8 +62,8 @@ CREATE TABLE `invoices` (
   `invoice_number` varchar(255) NOT NULL,
   `payment_date` date NOT NULL,
   `payment_order_id` varchar(255) NOT NULL,
-  `invoice_provider_id` varchar(255) NOT NULL,
-  `invoice_provider_name` varchar(255) NOT NULL,
+  `invoice_provider_id` varchar(255) NOT NULL,    -- Employee ID
+  `invoice_provider_name` varchar(255) NOT NULL,  -- Employee Name
   `created_by` varchar(255) NOT NULL,
   `created_date_time` datetime NOT NULL,
   `updated_date_time` datetime NOT NULL,
@@ -76,8 +76,8 @@ CREATE TABLE `contracts` (
   `amount` varchar(255) NOT NULL,
   `payment_date` date NOT NULL,
   `payment_order_id` varchar(255) NOT NULL,
-  `invoice_provider_id` varchar(255) NOT NULL,
-  `invoice_provider_name` varchar(255) NOT NULL,
+  `invoice_provider_id` varchar(255) NOT NULL,    -- Employee id
+  `invoice_provider_name` varchar(255) NOT NULL,  -- Employee name
   `created_by` varchar(255) NOT NULL,
   `created_date_time` datetime NOT NULL,
   `updated_date_time` datetime NOT NULL,
