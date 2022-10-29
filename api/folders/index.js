@@ -28,8 +28,12 @@ Router.get("/get-user-folders/:_id/:folder_name", async (req, res) => {
     db.query(q, [req.params._id, parent_folder_name], (err, data) => {
       if (err) return res.status(500).json(err.message);
       // else console.log(data);
-      console.log({ data });
-      return res.status(200).json({ data });
+      console.log({
+        data
+      });
+      return res.status(200).json({
+        data
+      });
     });
   } catch (error) {}
 });
@@ -46,9 +50,10 @@ Router.post("/create-folder", async (req, res) => {
     const user_id = req.body.user_id;
     const folderName = req.body.folderName;
     const userName = req.body.userName;
-    const parentFolderName = req.body?.parentFolderName
-      ? req.body?.parentFolderName
-      : "root";
+    const parentFolderName = 
+      (req.body ?.parentFolderName) ?
+      (req.body ?.parentFolderName) : ("root");
+
     // s3 bucket options
     const bucketOptions = {
       Bucket: "finlo",
@@ -73,10 +78,15 @@ Router.post("/create-folder", async (req, res) => {
       if (err) return res.status(500).json(err.message);
       return res
         .status(200)
-        .json({ message: "File uploaded successfully", data });
+        .json({
+          message: "File uploaded successfully",
+          data
+        });
     });
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    return res.status(500).json({
+      error: error.message
+    });
   }
 });
 /*
@@ -87,12 +97,20 @@ Access    Public
 Method    DELETE
 */
 Router.delete("/delete-folder", (req, res) => {
-  const { folderName, user_id } = req.body;
-  console.log({ folderName, user_id });
+  const {
+    folderName,
+    user_id
+  } = req.body;
+  console.log({
+    folderName,
+    user_id
+  });
   const q = `DELETE FROM client_folders WHERE folder_name = (?) and user_id = (?)`;
   db.query(q, [folderName, user_id], (err, data) => {
     if (err) return res.status(500).json(err.message);
-    return res.status(200).json({ data });
+    return res.status(200).json({
+      data
+    });
   });
 });
 
@@ -104,7 +122,12 @@ Access    Public
 Method    DELETE
 */
 Router.put("/update-folder-name", (req, res) => {
-  const { folderNewName, client_folders_id, folderName, user_id } = req.body;
+  const {
+    folderNewName,
+    client_folders_id,
+    folderName,
+    user_id
+  } = req.body;
   let q =
     "UPDATE client_folders SET folder_name =?, updated_date_time = ? where `client_folders_id` =? AND `user_id` = ?";
   let q1 =
@@ -130,8 +153,12 @@ Router.put("/update-folder-name", (req, res) => {
           q,
           [folderNewName, client_folders_id, folderName],
           (err, data) => {
-            if (err) return res.status(500).json({ error: err.message });
-            return res.status(200).json({ data });
+            if (err) return res.status(500).json({
+              error: err.message
+            });
+            return res.status(200).json({
+              data
+            });
           }
         );
       }
@@ -140,4 +167,3 @@ Router.put("/update-folder-name", (req, res) => {
 });
 
 module.exports = Router;
-

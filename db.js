@@ -7,7 +7,7 @@ const mysql = require("mysql");
 //   password: "rootuser@123",
 //   database: "finlotax",
 // });
-
+console.log({db_key: process.env.DB_KEY});
 db = mysql.createConnection({
   port: "3306",
   host: "localhost",

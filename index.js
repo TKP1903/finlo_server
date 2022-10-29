@@ -15,6 +15,8 @@ const Auth = require("./api/Auth/index");
 const Folders = require("./api/folders/index");
 const Docs = require("./api/files/index");
 const Admin = require("./admin/api/client_api");
+const Contracts = require("./api/contracts/index");
+const Invoice = require("./api/invoice/index");
 
 const Finlo = express();
 
@@ -44,6 +46,8 @@ Finlo.use("/auth", Auth);
 Finlo.use("/folder", Folders);
 Finlo.use("/file", Docs);
 Finlo.use("/admin", Admin);
+Finlo.use("/contract", Contracts);
+Finlo.use("/invoice", Invoice);
 
 Finlo.get('/', (req, res) => res.json("Welcome to Finlo"))
 

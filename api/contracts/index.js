@@ -1,5 +1,6 @@
 const express = require("express");
 
+<<<<<<< HEAD
 const Router = express.Router();
 const db = require("../../db");
 
@@ -31,5 +32,23 @@ Router.get (
 );
 
 
+=======
+//utils
+const s3Upload = require("../../utils/s3");
+const db = require("../../db");
+
+const Router = express.Router();
+
+// let now = new Date();
+// let date = now.toLocaleDateString();
+// let time = now.toLocaleTimeString();
+// const date_time = new Date();
+
+// Router.get (
+//   "/get-user-contracts/:user_id", async (req, res) => {
+    
+//   }
+// );
+>>>>>>> e91f963af27717ec432df3ef291c918a1f125b8d
 
 module.exports = Router;
