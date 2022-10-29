@@ -1,10 +1,11 @@
 const express = require("express");
 
-//utils
-const s3Upload = require("../../utils/s3");
+const Router = express.Router();
 const db = require("../../db");
 
-const Router = express.Router();
+
+//utils
+const s3Upload = require("../../utils/s3");
 
 let now = new Date();
 let date = now.toLocaleDateString();

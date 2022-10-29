@@ -1,3 +1,4 @@
+require('dotenv').config();
 const mysql = require("mysql");
 
 // const db = mysql.createConnection({
@@ -12,7 +13,8 @@ db = mysql.createConnection({
   host: "localhost",
   user: "root",
   database: "finlo",
-  password: "9344120434Ab@",
+  // password: "9344120434Ab@",
+  password: process.env.DB_KEY,
   multipleStatements: true,
   dateStrings: "Date",
 });
