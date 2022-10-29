@@ -9,7 +9,7 @@ const s3Upload = require("../../utils/s3");
 //db functions
 // const { getCostumerIdFromUserId } = require("../../db_functions/getCostumerId");
 // const { getLastInsertId } = require("../../db_functions/getLastInsertId");
-const { 
+const {
   db_query,
   getLastInsertId,
   getCostumerIdFromUserId,
@@ -23,7 +23,7 @@ const date_time = new Date();
 // req to know about the endpoints
 Router.get("/", (req, res) => {
   res.json(
-`The following are the endpoints for the contract module:
+    `The following are the endpoints for the contract module:
     1 /create-new-contract/:user_id - POST 
         req.body: {
           amount : int,
@@ -49,7 +49,8 @@ Router.get("/", (req, res) => {
         }
           
     4. /delete-contract/:user_id/:contract_id - DELETE 
-`);
+`
+  );
 });
 
 /**
@@ -79,76 +80,83 @@ Router.get("/", (req, res) => {
 //  * document_id
  */
 
-// create contract
-Router.post("/create-new-contract/:user_id", async (req, res) => {
-  try {
-    const { user_id } = req.params;
-    const {
-        amount,
-        payment_order_id,
-        invoice_provider_id,
-        invoice_provider_name,
-    } = req.body;
-
-    const {
-        created_by,
-        created_date_time,
-        updated_date_time,
-    } = {
-        created_by: invoice_provider_name,
-        created_date_time: date_time,
-        updated_date_time: date_time,
-    };
-
-    const customer_id = await getCostumerIdFromUserId(user_id);
-
-    // make new contract in the db
-    const q = "INSERT INTO contracts (customer_id, amount, payment_order_id, invoice_provider_id, invoice_provider_name, created_by, created_date_time, updated_date_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-
-    db.query(
-        q,
-        [
-            customer_id,
-            amount,
-            payment_order_id,
-            invoice_provider_id,
-            invoice_provider_name,
-            created_by,
-            created_date_time,
-            updated_date_time,
-        ],
-        async (err, data) => {
-            if (err) return res.status(500).json(err.message);
-            // else console.log(data);
-            const contract_id = await getLastInsertId();
-            const contract  = (await db_query ("SELECT * FROM contracts WHERE id = (?)", [contract_id]))[0];
-            
-            console.log({ contract });
-            return res.status(200).json({ contract });
-        }
-    );
-  } catch (err) {
-    console.error(err.message);
-  }
-});
-
 // get contracts
 Router.get("/get-contracts/:user_id", async (req, res) => {
   try {
     const costumer_id = await getCostumerIdFromUserId(req.params.user_id);
+    
     if (!costumer_id && costumer_id !== 0) {
       throw new Error("No costumer_id found for the given user_id");
     }
+
     const q = "SELECT * FROM contracts WHERE customer_id = (?)";
+    
     db.query(q, [costumer_id], (err, data) => {
-      if (err) return res.status(500).json(err.message);
-      // else console.log(data);
+      
+      if (err) {
+        return res.status(500).json(err.message);
+      }
+
       console.log({ data });
       return res.status(200).json({ data });
     });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: error.message });
+  }
+});
+
+// create contract
+Router.post("/create-new-contract/:user_id", async (req, res) => {
+  try {
+    const { user_id } = req.params;
+    const {
+      amount,
+      payment_order_id,
+      invoice_provider_id,
+      invoice_provider_name,
+    } = req.body;
+
+    const { created_by, created_date_time, updated_date_time } = {
+      created_by: invoice_provider_name,
+      created_date_time: date_time,
+      updated_date_time: date_time,
+    };
+
+    const customer_id = await getCostumerIdFromUserId(user_id);
+
+    // make new contract in the db
+    const q =
+      "INSERT INTO contracts (customer_id, amount, payment_order_id, invoice_provider_id, invoice_provider_name, created_by, created_date_time, updated_date_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+    db.query(
+      q,
+      [
+        customer_id,
+        amount,
+        payment_order_id,
+        invoice_provider_id,
+        invoice_provider_name,
+        created_by,
+        created_date_time,
+        updated_date_time,
+      ],
+      async (err, data) => {
+        if (err) return res.status(500).json(err.message);
+        // else console.log(data);
+        const contract_id = await getLastInsertId();
+        const contract = (
+          await db_query("SELECT * FROM contracts WHERE id = (?)", [
+            contract_id,
+          ])
+        )[0];
+
+        console.log({ contract });
+        return res.status(200).json({ contract });
+      }
+    );
+  } catch (err) {
+    console.error(err.message);
   }
 });
 
