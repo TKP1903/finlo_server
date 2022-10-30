@@ -5,7 +5,7 @@ const db = require("../../db");
 
 
 //utils
-const s3Upload = require("../../utils/s3");
+const { s3Upload } = require("../../utils/s3");
 
 let now = new Date();
 let date = now.toLocaleDateString();

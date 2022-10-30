@@ -1,5 +1,5 @@
-const express = require('express');
-const passport = require('passport');
+const express = require("express");
+const passport = require("passport");
 const Router = express.Router();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -48,28 +48,35 @@ Router.post("/login", (req, res) => {
   const q = "SELECT * FROM users WHERE email = ?";
 
   db.query(q, [req.body.email], (err, data) => {
-    console.log(data);
-    if (err) return res.status(500).json(err);
-    if (data.length === 0) return res.status(404).json("User not found!!");
+    try {
+      console.log(data);
+      if (err) {
+        console.log (err);
+        return res.status(500).json(err);
+      }
+      if (data.length === 0) return res.status(404).json("User not found!!");
 
-    //Check password
-    const isPasswordCorrect = bcrypt.compareSync(
-      req.body.password,
-      data[0].password
-    );
+      //Check password
+      const isPasswordCorrect = bcrypt.compareSync(
+        req.body.password,
+        data[0].password
+      );
 
-    if (!isPasswordCorrect)
-      return res.status(400).json("Wrong username or password!");
+      if (!isPasswordCorrect)
+        return res.status(400).json("Wrong username or password!");
 
-    const token = jwt.sign({ id: data[0].id }, "jwtkey");
-    const { password, ...other } = data[0];
+      const token = jwt.sign({ id: data[0].id }, "jwtkey");
+      const { password, ...other } = data[0];
 
-    res
-      .cookie("access_token", token, {
-        httpOnly: true,
-      })
-      .status(200)
-      .json(other);
+      res
+        .cookie("access_token", token, {
+          httpOnly: true,
+        })
+        .status(200)
+        .json(other);
+    } catch (err) {
+      console.log(err);
+    }
   });
 });
 
@@ -125,8 +132,6 @@ Router.post("/logout", (req, res) => {
     .json("User has been logged out.");
 });
 module.exports = Router;
-  
-
 
 // INSERT INTO `finlotax`.`customer`
 // (`email`,

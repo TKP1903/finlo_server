@@ -2,9 +2,15 @@ const express = require("express");
 const passport = require("passport");
 const multer = require("multer");
 
+
 //utils
-const s3Upload = require("../../utils/s3");
+const { s3Upload, s3Bucket } = require("../../utils/s3");
 const db = require("../../db");
+const { CostExplorer } = require("aws-sdk");
+
+// const {
+//   ConfigurationServicePlaceholders,
+// } = require("aws-sdk/lib/config_service_placeholders");
 
 const Router = express.Router();
 
@@ -16,6 +22,68 @@ let now = new Date();
 let date = now.toLocaleDateString();
 let time = now.toLocaleTimeString();
 const date_time = now;
+
+const getSignedUrl = async (key, expires) => {
+  const params = {
+    Bucket: "finlo",
+    Key: key,
+    Expires: expires || 1000 * 5,
+  };
+  try {
+    const url = await new Promise((resolve, reject) => {
+      s3Bucket.getSignedUrl("getObject", params, (err, url) => {
+        err ? reject(err) : resolve(url);
+      });
+    });
+    console.log(url);
+    return url;
+  } catch (err) {
+    if (err) {
+      console.log(err);
+    }
+  }
+};
+
+const getKeyFromS3Link = (s3Link) => {
+  const url = new URL(s3Link);
+  return decodeURIComponent (url.pathname.slice(1));
+};  
+
+Router.get(
+  "/get-download-link",
+  // passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    try {
+      const {
+        user_id,
+        s3Link,
+        expires
+      } = req.body;
+      console.log (req.body);
+      // check if user is in the db
+      const user = await db.query(
+        "SELECT * FROM users WHERE user_id = $1",
+        [user_id],
+        (err, result) => {
+          if (err) {
+            console.log(err);
+          }
+          console.log(result.rows);
+          // if user is not in the db
+          if (result.rows.length === 0) {
+            return res.status(401).json("Unauthorized");
+          }
+        }
+      );
+      const key = getKeyFromS3Link(s3Link);
+      const url = await getSignedUrl(key, expires);  
+      return res.status(200).json({ url });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ error: error.message });
+    }
+  }
+);
 
 /*
 Route     /get-user-docs/:_id/:folderName
@@ -156,11 +224,10 @@ Router.put("/update-file-name", (req, res) => {
     db.query(q, [updatedFileName, client_documents_id, userID], (err, data) => {
       if (err) return res.status(500).json(err.message);
       return res.status(200).json({ data });
-    });  
+    });
   } catch (error) {
-    return res.status()
+    return res.status();
   }
-  
 });
 
 // UPDATE `finlotax`.`client_documents` SET `document_name` = '6_Pista.jpg' WHERE (`client_documents_id` = '8') and (`user_id` = '2');

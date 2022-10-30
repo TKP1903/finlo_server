@@ -15,4 +15,8 @@ const s3Upload = (options) => {
     })
   );
 };
-module.exports = s3Upload;
+
+module.exports = {
+  s3Bucket,
+  s3Upload,
+};

@@ -3,8 +3,6 @@ const express = require("express");
 const Router = express.Router();
 const db = require("../../db");
 
-//utils
-const s3Upload = require("../../utils/s3");
 
 //db functions
 // const { getCostumerIdFromUserId } = require("../../db_functions/getCostumerId");
